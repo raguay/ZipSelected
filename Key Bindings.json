@@ -1,0 +1,3 @@
+[
+	{ "keys": ["Shift+z"], "command": "zip_selected" }
+]
