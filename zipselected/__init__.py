@@ -1,6 +1,9 @@
 from fman import DirectoryPaneCommand, show_alert
 import os
 import zipfile
+from fman.url import as_human_readable
+from fman.url import as_url
+
 
 def zipdir(rootZip, path, ziph):
     numf = 0
@@ -20,16 +23,17 @@ class ZipSelected(DirectoryPaneCommand):
         if len(selected_files) >= 1 or (len(selected_files) == 0 and self.get_chosen_files()):
             if len(selected_files) == 0 and self.get_chosen_files():
                 selected_files.append(self.get_chosen_files()[0])
-            dirPath = os.path.dirname(selected_files[0])
+            dirPath = os.path.dirname(as_human_readable(selected_files[0]))
             dirName = os.path.basename(dirPath)
-            zipName = os.path.join(dirPath,dirName + ".zip")
+            zipName = os.path.join(dirPath, dirName + ".zip")
             numf = 0
-            zipf = zipfile.ZipFile(zipName, 'w', zipfile.ZIP_DEFLATED)
+            zipf = zipfile.ZipFile(zipName, 'w')
             for file in selected_files:
+                file = as_human_readable(file)
                 if os.path.isdir(file):
-                    numf += zipdir(os.path.join(dirName,os.path.basename(file)),file,zipf)
+                    numf += zipdir(os.path.join(dirName, os.path.basename(file)),file,zipf)
                 else:
-                    zipf.write(file, os.path.join(dirName,os.path.basename(file)))
+                    zipf.write(file, os.path.join(dirName, os.path.basename(file)))
                     numf += 1
             output += str(numf) + " files were zipped!"
             zipf.close()
